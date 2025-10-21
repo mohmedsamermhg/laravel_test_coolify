@@ -1,61 +1,17 @@
-version: '3.8'
-
 services:
   app:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: laravel-app
-    restart: unless-stopped
-    working_dir: /var/www/html
     volumes:
-      - ./:/var/www/html
-    networks:
-      - laravel
-
-  nginx:
-    image: nginx:alpine
-    container_name: laravel-nginx
-    restart: unless-stopped
-    ports:
-      - "8080:80"
-    volumes:
-      - ./:/var/www/html
-      - ./docker/nginx.conf:/etc/nginx/conf.d/default.conf
-    networks:
-      - laravel
-    depends_on:
-      - app
-
-  db:
-    image: mysql:8.0
-    container_name: laravel-db
-    restart: unless-stopped
+      - './storage:/var/www/html/storage'
     environment:
-      MYSQL_DATABASE: ${DB_DATABASE:-laravel}
-      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-root}
-      MYSQL_PASSWORD: ${DB_PASSWORD:-root}
-      MYSQL_USER: ${DB_USERNAME:-laravel}
-    volumes:
-      - dbdata:/var/lib/mysql
-    ports:
-      - "3306:3306"
-    networks:
-      - laravel
-
-  redis:
-    image: redis:alpine
-    container_name: laravel-redis
-    restart: unless-stopped
-    ports:
-      - "6379:6379"
-    networks:
-      - laravel
-
-networks:
-  laravel:
-    driver: bridge
-
-volumes:
-  dbdata:
-    driver: local
+      DB_CONNECTION: mysql
+      DB_HOST: ${DB_HOST}
+      DB_PORT: ${DB_PORT}
+      DB_DATABASE: ${DB_DATABASE}
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+      REDIS_HOST: ${REDIS_HOST}
+      REDIS_PORT: 6379
+      AUTORUN_ENABLED: true
