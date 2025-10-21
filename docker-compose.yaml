@@ -3,15 +3,21 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    volumes:
-      - './storage:/var/www/html/storage'
     environment:
-      DB_CONNECTION: mysql
-      DB_HOST: ${DB_HOST}
-      DB_PORT: ${DB_PORT}
-      DB_DATABASE: ${DB_DATABASE}
-      DB_USERNAME: ${DB_USERNAME}
-      DB_PASSWORD: ${DB_PASSWORD}
-      REDIS_HOST: ${REDIS_HOST}
-      REDIS_PORT: 6379
-      AUTORUN_ENABLED: true
+      - DB_CONNECTION=mysql
+      - DB_HOST=127.0.0.1
+      - DB_PORT=3306
+      - DB_DATABASE=laravel
+      - DB_USERNAME=laravel
+      - DB_PASSWORD=password
+      - APP_NAME=Laravel
+      - APP_ENV=production
+      - APP_KEY=base64:cGxlYXNlIGdlbmVyYXRlIHRoaXMga2V5IHVzaW5nIHBocCBhcnRpc2FuIGtleTpnZW5lcmF0ZQ==
+      - APP_DEBUG=false
+      - APP_URL=http://localhost:8000
+    volumes:
+      - ./storage:/var/www/html/storage
+      - mysqldata:/var/lib/mysql
+
+volumes:
+  mysqldata:

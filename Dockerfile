@@ -1,30 +1,44 @@
-FROM serversideup/php:8.1-fpm-nginx
+FROM php:8.1-fpm-alpine
 
-ENV PHP_OPCACHE_ENABLE=1
+WORKDIR /var/www/html
 
-USER root
+# Install packages
+RUN apk add --no-cache \
+    nginx \
+    supervisor \
+    mysql \
+    mysql-client \
+    git \
+    zip \
+    unzip
 
-# Install Node.js if needed
-RUN curl -sL https://deb.nodesource.com/setup_20.x | bash -
-RUN apt-get install -y nodejs
+# Install PHP extensions
+RUN docker-php-ext-install pdo pdo_mysql bcmath
 
-# Copy application files
-COPY --chown=www-data:www-data . /var/www/html
+# Install Composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-USER www-data
+# Copy application
+COPY . /var/www/html
 
 # Install dependencies
-RUN composer install --no-interaction --optimize-autoloader --no-dev
+RUN composer install --no-dev --optimize-autoloader
 
-# Build assets (if needed)
-RUN npm install
-RUN npm run build
+# Permissions
+RUN chown -R www-data:www-data /var/www/html \
+    && chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
 
-# Back to root for final setup
-USER root
-RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
-RUN chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
+# MySQL data directory
+RUN mkdir -p /run/mysqld \
+    && chown -R mysql:mysql /run/mysqld \
+    && chown -R mysql:mysql /var/lib/mysql
 
-EXPOSE 8080
+# Copy configs
+COPY nginx.conf /etc/nginx/nginx.conf
+COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+COPY init-mysql.sh /init-mysql.sh
+RUN chmod +x /init-mysql.sh
 
-USER www-data
+EXPOSE 8000
+
+CMD ["/init-mysql.sh"]
