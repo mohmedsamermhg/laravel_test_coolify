@@ -5,11 +5,11 @@ services:
       dockerfile: Dockerfile
     environment:
       - DB_CONNECTION=mysql
-      - DB_HOST=hatch.c34gs2wwub0l.me-south-1.rds.amazonaws.com
+      - DB_HOST=157.175.68.214
       - DB_PORT=3306
-      - DB_DATABASE=laravel_test_coolify
-      - DB_USERNAME=admin_hatch
-      - DB_PASSWORD=89567423
+      - DB_DATABASE=laravel
+      - DB_USERNAME=root
+      - DB_PASSWORD=xblWT8RDa3s3LMYbOdV2pL6DsTjgo9o1cpKgl3iGnRuomLcaSZtT2xaEp4hIhxl6
       - APP_NAME=coolify_laravel_test
       - APP_ENV=local
       - APP_KEY=base64:Hc5ktBR5nEQeFJ4n08OxoY7zpxMKOG9iKdAgHxLEkQQ=
